@@ -1,5 +1,6 @@
 package global.error;
 
+import global.error.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
