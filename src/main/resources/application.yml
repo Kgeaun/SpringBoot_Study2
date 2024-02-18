@@ -24,12 +24,12 @@ spring:
     hibernate:
       ddl-auto: update
 
-jwt:
-  header: Authorization
-  prefix: Bearer
-  secret: lhjljlasndflasjdkfasdkfnasdasjidkflajsdkfahsdfjkafewfawefwaefeawfw
-  accessExpiration: 604800
-  refreshExpiration: 271000
+  jwt:
+    secret_key: ${SECRET_KEY}
+    access_exp: ${ACCESS_EXP}
+    refresh_exp: ${REFRESH_EXP}
+    header: ${HEADER}
+    prefix: ${PREFIX}
 
 redis:
   host: ${REDIS_HOST:localhost}
