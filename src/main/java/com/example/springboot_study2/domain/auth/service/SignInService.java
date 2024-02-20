@@ -40,6 +40,5 @@ public class SignInService {
                 .expiredAt(expiredAt)
                 .refreshToken(refreshToken)
                 .build();
-
     }
 }
