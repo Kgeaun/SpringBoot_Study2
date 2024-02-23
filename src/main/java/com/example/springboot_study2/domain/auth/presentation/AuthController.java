@@ -18,10 +18,14 @@ public class AuthController {
     private final ReissueService reissueService;
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/token")
+    @PostMapping("/sign_in")
     public TokenResponse signIn(@RequestBody @Valid SignInRequest request) {
         return loginService.signIn(request);
     }
 
-
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/token")
+    public TokenResponse reissue(String refreshToken) {
+        return reissueService.reissue(refreshToken);
+    }
 }
