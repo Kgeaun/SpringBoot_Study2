@@ -21,7 +21,7 @@ public class FilterConfig extends SecurityConfigurerAdapter<DefaultSecurityFilte
 
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtTokenProvider);
         ExceptionFilter exceptionFilter = new ExceptionFilter(objectMapper);
-        builder.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        builder.addFilterBefore(exceptionFilter, JwtTokenFilter.class);
+        builder.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionFilter, JwtTokenFilter.class);
     }
 }
