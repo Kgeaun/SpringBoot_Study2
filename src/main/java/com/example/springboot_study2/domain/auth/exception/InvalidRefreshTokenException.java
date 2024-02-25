@@ -1,7 +1,7 @@
 package com.example.springboot_study2.domain.auth.exception;
 
-import global.error.ErrorCode;
 import global.error.CustomException;
+import global.error.ErrorCode;
 
 public class InvalidRefreshTokenException extends CustomException {
 
