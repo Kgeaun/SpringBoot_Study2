@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final SignInService loginService;
+    private final SignInService signInService;
     private final ReissueService reissueService;
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/sign_in")
+    @PostMapping("/signIn")
     public TokenResponse signIn(@RequestBody @Valid SignInRequest request) {
-        return loginService.signIn(request);
+        return signInService.signIn(request);
     }
 
     @ResponseStatus(HttpStatus.OK)
