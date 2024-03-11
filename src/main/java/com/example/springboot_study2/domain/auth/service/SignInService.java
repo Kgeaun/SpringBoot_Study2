@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class SignInService {
 
     private final UserRepository userRepository;
