@@ -1,0 +1,324 @@
+import java.util.*;
+import java.time.LocalDateTime;
+
+public class AnimalCrossingConsole {
+
+    // -----------------------------
+    // Player
+    // -----------------------------
+    static class Player {
+        String name;
+        List<Item> inventory;
+        House house;
+        int bells;
+
+        public Player(String name) {
+            this.name = name;
+            this.bells = 5000;
+            this.inventory = new ArrayList<>();
+            this.house = new House();
+        }
+
+        public void showInventory() {
+            System.out.println("[" + name + "'s Inventory]");
+            for (Item item : inventory) {
+                System.out.println("- " + item.name);
+            }
+            System.out.println("Bells: " + bells);
+        }
+
+        public void addItem(Item item) {
+            inventory.add(item);
+            System.out.println(item.name + " added to your inventory!");
+        }
+
+        public void spendBells(int amount) {
+            if (bells >= amount) {
+                bells -= amount;
+                System.out.println(amount + " bells spent.");
+            } else {
+                System.out.println("Not enough bells!");
+            }
+        }
+
+        public void decorateHouse(Item item) {
+            house.addFurniture(item);
+        }
+    }
+
+    // -----------------------------
+    // House
+    // -----------------------------
+    static class House {
+        List<Item> furnitures = new ArrayList<>();
+
+        public void addFurniture(Item item) {
+            furnitures.add(item);
+            System.out.println(item.name + " placed in your house.");
+        }
+
+        public void showHouse() {
+            System.out.println("[Your House]");
+            for (Item f : furnitures) {
+                System.out.println("- " + f.name);
+            }
+        }
+    }
+
+    // -----------------------------
+    // Item
+    // -----------------------------
+    static class Item {
+        String name;
+        int price;
+
+        public Item(String name, int price) {
+            this.name = name;
+            this.price = price;
+        }
+    }
+
+    // -----------------------------
+    // NPC
+    // -----------------------------
+    static class NPC {
+        String name;
+        String personality;
+
+        public NPC(String name, String personality) {
+            this.name = name;
+            this.personality = personality;
+        }
+
+        public void talk() {
+            System.out.println(name + ": " + getRandomDialogue());
+        }
+
+        private String getRandomDialogue() {
+            String[] lines = {
+                "What a nice day today!",
+                "Did you check the store yet?",
+                "Let's be friends!",
+                "I heard there's a rare fish in the river."
+            };
+            return lines[new Random().nextInt(lines.length)];
+        }
+    }
+
+    // -----------------------------
+    // Store
+    // -----------------------------
+    static class Store {
+        List<Item> itemsForSale = new ArrayList<>();
+
+        public Store() {
+            itemsForSale.add(new Item("Wooden Chair", 800));
+            itemsForSale.add(new Item("Lamp", 500));
+            itemsForSale.add(new Item("Plant", 300));
+            itemsForSale.add(new Item("Bed", 1500));
+        }
+
+        public void showItems() {
+            System.out.println("[Store Inventory]");
+            for (int i = 0; i < itemsForSale.size(); i++) {
+                Item item = itemsForSale.get(i);
+                System.out.println((i+1) + ". " + item.name + " (" + item.price + " bells)");
+            }
+        }
+
+        public Item buyItem(int index, Player player) {
+            if (index >= 1 && index <= itemsForSale.size()) {
+                Item item = itemsForSale.get(index - 1);
+                if (player.bells >= item.price) {
+                    player.spendBells(item.price);
+                    System.out.println("Thank you for purchasing " + item.name + "!");
+                    return item;
+                } else {
+                    System.out.println("You don't have enough bells.");
+                }
+            } else {
+                System.out.println("Invalid item number.");
+            }
+            return null;
+        }
+    }
+
+    // -----------------------------
+    // Village
+    // -----------------------------
+    static class Village {
+        String name;
+        List<NPC> villagers;
+
+        public Village(String name) {
+            this.name = name;
+            this.villagers = new ArrayList<>();
+            villagers.add(new NPC("Bunny", "Cheerful"));
+            villagers.add(new NPC("Leo", "Lazy"));
+            villagers.add(new NPC("Anabelle", "Fashionable"));
+        }
+
+        public void showVillagers() {
+            System.out.println("[Villagers in " + name + "]");
+            for (NPC npc : villagers) {
+                System.out.println("- " + npc.name + " (" + npc.personality + ")");
+            }
+        }
+
+        public void talkToVillager(String npcName) {
+            for (NPC npc : villagers) {
+                if (npc.name.equalsIgnoreCase(npcName)) {
+                    npc.talk();
+                    return;
+                }
+            }
+            System.out.println("No villager found with that name.");
+        }
+    }
+
+    // -----------------------------
+    // MailSystem
+    // -----------------------------
+    static class MailSystem {
+        Map<String, List<String>> mailbox = new HashMap<>();
+
+        public void sendMail(String recipient, String message) {
+            mailbox.putIfAbsent(recipient, new ArrayList<>());
+            mailbox.get(recipient).add(message);
+            System.out.println("Mail sent to " + recipient + "!");
+        }
+
+        public void checkMail(String playerName) {
+            List<String> mails = mailbox.getOrDefault(playerName, new ArrayList<>());
+            System.out.println("[" + playerName + "'s Mailbox]");
+            for (String m : mails) {
+                System.out.println("- " + m);
+            }
+            if (mails.isEmpty()) {
+                System.out.println("No new mail.");
+            }
+        }
+    }
+
+    // -----------------------------
+    // GameEngine
+    // -----------------------------
+    static class GameEngine {
+        Player player;
+        Village village;
+        Store store;
+        MailSystem mail;
+        Scanner sc;
+
+        public GameEngine() {
+            sc = new Scanner(System.in);
+            mail = new MailSystem();
+        }
+
+        public void start() {
+            System.out.println("Welcome to Console Crossing!");
+            System.out.print("Enter your name: ");
+            String name = sc.nextLine();
+            player = new Player(name);
+            village = new Village("SunnyIsland");
+            store = new Store();
+
+            boolean running = true;
+            while (running) {
+                showMenu();
+                int choice = getChoice();
+                switch (choice) {
+                    case 1 -> village.showVillagers();
+                    case 2 -> talkToVillager();
+                    case 3 -> visitStore();
+                    case 4 -> player.showInventory();
+                    case 5 -> decorateHouse();
+                    case 6 -> player.house.showHouse();
+                    case 7 -> sendMail();
+                    case 8 -> mail.checkMail(player.name);
+                    case 9 -> showTime();
+                    case 0 -> {
+                        System.out.println("Goodbye!");
+                        running = false;
+                    }
+                    default -> System.out.println("Invalid option.");
+                }
+            }
+        }
+
+        private void showMenu() {
+            System.out.println("""
+                    
+                    [What would you like to do?]
+                    1. See villagers
+                    2. Talk to villager
+                    3. Visit store
+                    4. Check inventory
+                    5. Decorate house
+                    6. Show house
+                    7. Send mail
+                    8. Check mailbox
+                    9. See time
+                    0. Quit
+                    """);
+        }
+
+        private int getChoice() {
+            System.out.print("Choice: ");
+            try {
+                return Integer.parseInt(sc.nextLine());
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+
+        private void talkToVillager() {
+            System.out.print("Who do you want to talk to? ");
+            String npc = sc.nextLine();
+            village.talkToVillager(npc);
+        }
+
+        private void visitStore() {
+            store.showItems();
+            System.out.print("Choose item number to buy (0 to cancel): ");
+            int choice = getChoice();
+            if (choice == 0) return;
+            Item item = store.buyItem(choice, player);
+            if (item != null) {
+                player.addItem(item);
+            }
+        }
+
+        private void decorateHouse() {
+            player.showInventory();
+            System.out.print("Choose item name to place (empty to cancel): ");
+            String name = sc.nextLine();
+            for (Item item : player.inventory) {
+                if (item.name.equalsIgnoreCase(name)) {
+                    player.decorateHouse(item);
+                    return;
+                }
+            }
+            System.out.println("Item not found in inventory.");
+        }
+
+        private void sendMail() {
+            System.out.print("To whom? ");
+            String to = sc.nextLine();
+            System.out.print("Message: ");
+            String msg = sc.nextLine();
+            mail.sendMail(to, msg);
+        }
+
+        private void showTime() {
+            System.out.println("Current time: " + LocalDateTime.now());
+        }
+    }
+
+    // -----------------------------
+    // MAIN
+    // -----------------------------
+    public static void main(String[] args) {
+        new GameEngine().start();
+    }
+}
